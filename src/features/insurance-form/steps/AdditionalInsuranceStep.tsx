@@ -4,28 +4,28 @@ import {
   CheckboxGroup,
   Label,
   Text,
-} from 'react-aria-components'
-import { useController, useFormContext, useWatch } from 'react-hook-form'
-import type { InsuranceFormValues } from '../types'
-import { useInsuranceData } from '../useInsuranceData'
+} from "react-aria-components";
+import { useController, useFormContext, useWatch } from "react-hook-form";
+import type { InsuranceFormValues } from "../types";
+import { useInsuranceData } from "../useInsuranceData";
 
-const priceFormatter = new Intl.NumberFormat('nl-NL', {
-  style: 'currency',
-  currency: 'EUR',
+const priceFormatter = new Intl.NumberFormat("nl-NL", {
+  style: "currency",
+  currency: "EUR",
   minimumFractionDigits: 2,
-})
+});
 
 export function AdditionalInsuranceStep() {
-  const { control } = useFormContext<InsuranceFormValues>()
-  const { data, error, isLoading, mutate } = useInsuranceData()
+  const { control } = useFormContext<InsuranceFormValues>();
+  const { data, error, isLoading, mutate } = useInsuranceData();
   const { field } = useController({
-    name: 'additionalInsuranceIds',
+    name: "additionalInsuranceIds",
     control,
-  })
+  });
   const basicInsuranceId = useWatch({
-    name: 'basicInsuranceId',
+    name: "basicInsuranceId",
     control,
-  })
+  });
 
   if (isLoading) {
     return (
@@ -35,7 +35,7 @@ export function AdditionalInsuranceStep() {
       >
         Aanvullende verzekeringen laden…
       </div>
-    )
+    );
   }
 
   if (error || !data) {
@@ -55,20 +55,20 @@ export function AdditionalInsuranceStep() {
           Opnieuw proberen
         </button>
       </div>
-    )
+    );
   }
 
   const basicInsurance = data.basicInsurance.find(
     (insurance) => insurance.id === basicInsuranceId,
-  )
+  );
   const selectedAdditionalInsurance = data.additionalInsurance.filter(
     (insurance) => field.value.includes(insurance.id),
-  )
+  );
   const additionalPrice = selectedAdditionalInsurance.reduce(
     (total, insurance) => total + insurance.price,
     0,
-  )
-  const totalPrice = (basicInsurance?.price ?? 0) + additionalPrice
+  );
+  const totalPrice = (basicInsurance?.price ?? 0) + additionalPrice;
 
   return (
     <div className="grid gap-6">
@@ -103,16 +103,16 @@ export function AdditionalInsuranceStep() {
               <CheckboxButton
                 className={({ isFocusVisible, isHovered, isSelected }) =>
                   [
-                    'flex min-h-40 cursor-pointer flex-col rounded-card border p-4 outline-none transition',
+                    "flex min-h-40 cursor-pointer flex-col rounded-card border p-4 outline-none transition",
                     isSelected
-                      ? 'border-primary bg-primary-soft shadow-sm'
+                      ? "border-primary bg-primary-soft shadow-sm"
                       : isHovered
-                        ? 'border-primary/60 bg-surface shadow-sm'
-                        : 'border-border bg-surface',
+                        ? "border-primary/60 bg-surface shadow-sm"
+                        : "border-border bg-surface",
                     isFocusVisible
-                      ? 'ring-2 ring-focus ring-offset-2 ring-offset-surface'
-                      : '',
-                  ].join(' ')
+                      ? "ring-2 ring-focus ring-offset-2 ring-offset-surface"
+                      : "",
+                  ].join(" ")
                 }
               >
                 {({ isSelected }) => (
@@ -124,8 +124,8 @@ export function AdditionalInsuranceStep() {
                       <span
                         className={`mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-control border ${
                           isSelected
-                            ? 'border-primary bg-primary text-primary-foreground'
-                            : 'border-muted-foreground/50 bg-surface'
+                            ? "border-primary bg-primary text-primary-foreground"
+                            : "border-muted-foreground/50 bg-surface"
                         }`}
                         aria-hidden="true"
                       >
@@ -217,5 +217,5 @@ export function AdditionalInsuranceStep() {
         </dl>
       </section>
     </div>
-  )
+  );
 }

@@ -1,11 +1,11 @@
-import type { SubmitHandler } from 'react-hook-form'
-import { InsuranceForm } from './features/insurance-form/InsuranceForm'
-import type { InsuranceFormValues } from './features/insurance-form/types'
+import type { SubmitHandler } from "react-hook-form";
+import { InsuranceForm } from "./features/insurance-form/InsuranceForm";
+import type { InsuranceFormValues } from "./features/insurance-form/types";
 
 function App() {
   const handleFormSubmit: SubmitHandler<InsuranceFormValues> = (values) => {
-    console.info('Insurance form submitted', values)
-  }
+    console.info("Insurance form submitted", values);
+  };
 
   return (
     <main className="flex min-h-screen items-center justify-center px-4 py-10 sm:px-6">
@@ -22,7 +22,7 @@ function App() {
         <InsuranceForm onSubmit={handleFormSubmit} />
       </div>
     </main>
-  )
+  );
 }
 
-export default App
+export default App;

@@ -1,7 +1,7 @@
-import { DatePickerField } from '../../../components/form/DatePickerField'
-import { TextInputField } from '../../../components/form/TextInputField'
-import type { InsuranceFormValues } from '../types'
-import { birthDateBounds } from '../validation'
+import { DatePickerField } from "../../../components/form/DatePickerField";
+import { TextInputField } from "../../../components/form/TextInputField";
+import type { InsuranceFormValues } from "../types";
+import { birthDateBounds } from "../validation";
 
 export function PersonalInfoStep() {
   return (
@@ -53,5 +53,5 @@ export function PersonalInfoStep() {
         />
       </div>
     </div>
-  )
+  );
 }

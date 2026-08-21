@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef } from "react";
 import {
   FieldError,
   Label,
@@ -6,32 +6,32 @@ import {
   RadioField,
   RadioGroup,
   Text,
-} from 'react-aria-components'
-import { useController, useFormContext } from 'react-hook-form'
-import type { InsuranceFormValues } from '../types'
-import { useInsuranceData } from '../useInsuranceData'
+} from "react-aria-components";
+import { useController, useFormContext } from "react-hook-form";
+import type { InsuranceFormValues } from "../types";
+import { useInsuranceData } from "../useInsuranceData";
 
-const priceFormatter = new Intl.NumberFormat('nl-NL', {
-  style: 'currency',
-  currency: 'EUR',
+const priceFormatter = new Intl.NumberFormat("nl-NL", {
+  style: "currency",
+  currency: "EUR",
   minimumFractionDigits: 2,
-})
+});
 
 export function BasicInsuranceStep() {
-  const { control, trigger } = useFormContext<InsuranceFormValues>()
-  const { data, error, isLoading, mutate } = useInsuranceData()
+  const { control, trigger } = useFormContext<InsuranceFormValues>();
+  const { data, error, isLoading, mutate } = useInsuranceData();
   const {
     field: { ref: focusTargetRef, ...field },
     fieldState,
   } = useController({
-    name: 'basicInsuranceId',
+    name: "basicInsuranceId",
     control,
-  })
-  const firstInputRef = useRef<HTMLInputElement>(null)
+  });
+  const firstInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    focusTargetRef(firstInputRef.current)
-  }, [data, focusTargetRef])
+    focusTargetRef(firstInputRef.current);
+  }, [data, focusTargetRef]);
 
   if (isLoading) {
     return (
@@ -41,7 +41,7 @@ export function BasicInsuranceStep() {
       >
         Basisverzekeringen laden…
       </div>
-    )
+    );
   }
 
   if (error || !data?.basicInsurance.length) {
@@ -61,17 +61,17 @@ export function BasicInsuranceStep() {
           Opnieuw proberen
         </button>
       </div>
-    )
+    );
   }
 
   const selectedInsurance = data.basicInsurance.find(
     (insurance) => insurance.id === field.value,
-  )
+  );
 
   const selectInsurance = (insuranceId: string) => {
-    field.onChange(insuranceId)
-    void trigger('basicInsuranceId')
-  }
+    field.onChange(insuranceId);
+    void trigger("basicInsuranceId");
+  };
 
   return (
     <RadioGroup
@@ -87,7 +87,7 @@ export function BasicInsuranceStep() {
       <Label className="text-sm font-semibold text-foreground">
         Kies één basisverzekering
         <span className="text-danger" aria-hidden="true">
-          {' '}
+          {" "}
           *
         </span>
         <span className="sr-only"> (verplicht)</span>
@@ -110,18 +110,18 @@ export function BasicInsuranceStep() {
                   isSelected,
                 }) =>
                   [
-                    'flex min-h-28 cursor-pointer flex-col justify-between rounded-card border p-4 outline-none transition',
+                    "flex min-h-28 cursor-pointer flex-col justify-between rounded-card border p-4 outline-none transition",
                     isSelected
-                      ? 'border-primary bg-primary-soft shadow-sm'
+                      ? "border-primary bg-primary-soft shadow-sm"
                       : isInvalid
-                        ? 'border-danger/50 bg-surface'
+                        ? "border-danger/50 bg-surface"
                         : isHovered
-                          ? 'border-primary/60 bg-surface shadow-sm'
-                          : 'border-border bg-surface',
+                          ? "border-primary/60 bg-surface shadow-sm"
+                          : "border-border bg-surface",
                     isFocusVisible
-                      ? 'ring-2 ring-focus ring-offset-2 ring-offset-surface'
-                      : '',
-                  ].join(' ')
+                      ? "ring-2 ring-focus ring-offset-2 ring-offset-surface"
+                      : "",
+                  ].join(" ")
                 }
               >
                 {({ isSelected }) => (
@@ -133,8 +133,8 @@ export function BasicInsuranceStep() {
                       <span
                         className={`mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full border ${
                           isSelected
-                            ? 'border-primary bg-primary'
-                            : 'border-muted-foreground/50 bg-surface'
+                            ? "border-primary bg-primary"
+                            : "border-muted-foreground/50 bg-surface"
                         }`}
                         aria-hidden="true"
                       >
@@ -156,7 +156,7 @@ export function BasicInsuranceStep() {
                 )}
               </RadioButton>
             </RadioField>
-          )
+          );
         })}
       </div>
 
@@ -188,9 +188,9 @@ export function BasicInsuranceStep() {
 
       {fieldState.invalid && (
         <FieldError className="mt-2 text-sm font-medium text-danger">
-          {fieldState.error?.message ?? 'Controleer dit veld.'}
+          {fieldState.error?.message ?? "Controleer dit veld."}
         </FieldError>
       )}
     </RadioGroup>
-  )
+  );
 }
