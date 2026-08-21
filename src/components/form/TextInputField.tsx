@@ -1,99 +1,87 @@
-import { useId } from 'react'
-import type { ComponentPropsWithoutRef } from 'react'
-import { get, useFormContext } from 'react-hook-form'
-import type {
+import {
   FieldError,
-  FieldPath,
-  FieldValues,
-  RegisterOptions,
-} from 'react-hook-form'
+  Input,
+  Label,
+  Text,
+  TextField,
+} from 'react-aria-components'
+import type { FieldValues } from 'react-hook-form'
+import type { BaseFormFieldProps } from './field-types'
+import { useFormFieldController } from './useFormFieldController'
 
-type TextInputFieldProps<TFieldValues extends FieldValues> = Omit<
-  ComponentPropsWithoutRef<'input'>,
-  'id' | 'name' | 'required'
-> & {
-  id?: string
-  name: FieldPath<TFieldValues>
-  label: string
-  description?: string
-  required?: boolean
-  validationMode?: FieldValidationMode
-  rules?: RegisterOptions<TFieldValues, FieldPath<TFieldValues>>
-}
+type TextInputType =
+  | 'email'
+  | 'password'
+  | 'search'
+  | 'tel'
+  | 'text'
+  | 'url'
 
-export type FieldValidationMode = 'onBlur' | 'onChange'
+type TextInputMode =
+  | 'decimal'
+  | 'email'
+  | 'none'
+  | 'numeric'
+  | 'search'
+  | 'tel'
+  | 'text'
+  | 'url'
+
+export type TextInputFieldProps<TFieldValues extends FieldValues> =
+  BaseFormFieldProps<TFieldValues> & {
+    type?: TextInputType
+    inputMode?: TextInputMode
+    autoComplete?: string
+    placeholder?: string
+    maxLength?: number
+    isDisabled?: boolean
+    isReadOnly?: boolean
+  }
 
 export function TextInputField<TFieldValues extends FieldValues>({
-  id,
   name,
   label,
   description,
-  required = false,
-  validationMode = 'onBlur',
-  rules,
-  className = '',
-  onBlur: onInputBlur,
-  onChange: onInputChange,
-  ...inputProps
+  isRequired = false,
+  validateOn = 'blur',
+  type = 'text',
+  inputMode,
+  autoComplete,
+  placeholder,
+  maxLength,
+  isDisabled = false,
+  isReadOnly = false,
 }: TextInputFieldProps<TFieldValues>) {
-  const generatedId = useId()
-  const inputId = id ?? `text-input-${generatedId}`
-  const descriptionId = `${inputId}-description`
-  const errorId = `${inputId}-error`
   const {
-    register,
-    trigger,
-    formState: { errors },
-  } = useFormContext<TFieldValues>()
-
-  const fieldError = get(errors, name) as FieldError | undefined
-  const errorMessage =
-    typeof fieldError?.message === 'string'
-      ? fieldError.message
-      : 'Controleer dit veld.'
-  const describedBy = [
-    description ? descriptionId : undefined,
-    fieldError ? errorId : undefined,
-  ]
-    .filter(Boolean)
-    .join(' ')
-  const validationRules = {
-    ...rules,
-    ...(required && rules?.required === undefined
-      ? { required: `${label} is verplicht.` }
-      : {}),
-  } as RegisterOptions<TFieldValues, FieldPath<TFieldValues>>
-  const registration = register(name, validationRules)
-
-  const handleBlur: NonNullable<ComponentPropsWithoutRef<'input'>['onBlur']> =
-    async (event) => {
-      await registration.onBlur(event)
-      onInputBlur?.(event)
-
-      if (validationMode === 'onBlur') {
-        await trigger(name)
-      }
-    }
-
-  const handleChange: NonNullable<
-    ComponentPropsWithoutRef<'input'>['onChange']
-  > = async (event) => {
-    await registration.onChange(event)
-    onInputChange?.(event)
-
-    if (validationMode === 'onChange') {
-      await trigger(name)
-    }
-  }
+    errorMessage,
+    fieldName,
+    fieldValue,
+    focusTargetRef,
+    handleBlur,
+    isInvalid,
+    setValue,
+  } = useFormFieldController<TFieldValues>({ name, validateOn })
+  const value = typeof fieldValue === 'string' ? fieldValue : ''
 
   return (
-    <div className="w-full">
-      <label
-        className="mb-1.5 block text-sm font-semibold text-foreground"
-        htmlFor={inputId}
-      >
+    <TextField
+      name={fieldName}
+      value={value}
+      type={type}
+      inputMode={inputMode}
+      autoComplete={autoComplete}
+      isRequired={isRequired}
+      isDisabled={isDisabled}
+      isReadOnly={isReadOnly}
+      isInvalid={isInvalid}
+      validationBehavior="aria"
+      onBlur={handleBlur}
+      onChange={setValue}
+      className="w-full"
+    >
+      <Label className="mb-1.5 block text-sm font-semibold text-foreground">
         {label}
-        {required && (
+        {isRequired && (
           <>
             <span className="text-danger" aria-hidden="true">
               {' '}
@@ -102,42 +90,33 @@ export function TextInputField<TFieldValues extends FieldValues>({
             <span className="sr-only"> (verplicht)</span>
           </>
         )}
-      </label>
+      </Label>
 
       {description && (
-        <p
-          id={descriptionId}
-          className="mb-2 text-sm text-muted-foreground"
+        <Text
+          slot="description"
+          className="mb-2 block text-sm text-muted-foreground"
         >
           {description}
-        </p>
+        </Text>
       )}
 
-      <input
-        {...inputProps}
-        {...registration}
-        id={inputId}
+      <Input
+        ref={focusTargetRef}
+        placeholder={placeholder}
+        maxLength={maxLength}
         className={`block w-full rounded-control border bg-surface px-3.5 py-2.5 text-base text-foreground shadow-sm outline-none transition placeholder:text-muted-foreground/70 disabled:cursor-not-allowed disabled:bg-surface-muted disabled:text-muted-foreground ${
-          fieldError
+          isInvalid
             ? 'border-danger focus:border-danger focus:ring-4 focus:ring-danger/10'
             : 'border-border hover:border-muted-foreground/60 focus:border-primary focus:ring-4 focus:ring-primary-soft'
-        } ${className}`}
-        aria-invalid={fieldError ? true : undefined}
-        aria-describedby={describedBy || undefined}
-        required={required}
-        onBlur={handleBlur}
-        onChange={handleChange}
+        }`}
       />
 
-      {fieldError && (
-        <p
-          id={errorId}
-          className="mt-1.5 text-sm font-medium text-danger"
-          role="alert"
-        >
+      {isInvalid && (
+        <FieldError className="mt-1.5 text-sm font-medium text-danger">
           {errorMessage}
-        </p>
+        </FieldError>
       )}
-    </div>
+    </TextField>
   )
 }

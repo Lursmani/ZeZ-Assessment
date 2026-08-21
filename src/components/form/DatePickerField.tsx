@@ -20,20 +20,9 @@ import {
   Popover,
   Text,
 } from 'react-aria-components'
-import { useController, useFormContext } from 'react-hook-form'
-import type { FieldPath, FieldValues } from 'react-hook-form'
-import type { FieldValidationMode } from './TextInputField'
-
-const earliestAllowedDate = '1850-01-01'
-
-function getLocalToday() {
-  const today = new Date()
-  const year = today.getFullYear()
-  const month = String(today.getMonth() + 1).padStart(2, '0')
-  const day = String(today.getDate()).padStart(2, '0')
-
-  return `${year}-${month}-${day}`
-}
+import type { FieldValues } from 'react-hook-form'
+import type { BaseFormFieldProps } from './field-types'
+import { useFormFieldController } from './useFormFieldController'
 
 function isValidIsoDate(value: string) {
   const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value)
@@ -50,14 +39,6 @@ function isValidIsoDate(value: string) {
     date.getUTCMonth() === Number(month) - 1 &&
     date.getUTCDate() === Number(day)
   )
-}
-
-function isEmptyOrOnOrAfter(value: unknown, minimum: string) {
-  return value === '' || (typeof value === 'string' && value >= minimum)
-}
-
-function isEmptyOrOnOrBefore(value: unknown, maximum: string) {
-  return value === '' || (typeof value === 'string' && value <= maximum)
 }
 
 function formatDate(value: string) {
@@ -77,91 +58,62 @@ function toCalendarDate(value: unknown) {
   return parseDate(value)
 }
 
-type DatePickerFieldProps<TFieldValues extends FieldValues> = {
-  name: FieldPath<TFieldValues>
-  label: string
-  description?: string
-  required?: boolean
-  validationMode?: FieldValidationMode
-  minDate?: string
-  maxDate?: string
-}
+export type DatePickerFieldProps<TFieldValues extends FieldValues> =
+  BaseFormFieldProps<TFieldValues> & {
+    minDate?: string
+    maxDate?: string
+  }
 
 export function DatePickerField<TFieldValues extends FieldValues>({
   name,
   label,
   description,
-  required = false,
-  validationMode = 'onBlur',
-  minDate = earliestAllowedDate,
-  maxDate = getLocalToday(),
+  isRequired = false,
+  validateOn = 'blur',
+  minDate,
+  maxDate,
 }: DatePickerFieldProps<TFieldValues>) {
-  const { control, trigger } = useFormContext<TFieldValues>()
-  const { field, fieldState } = useController<TFieldValues>({
-    name,
-    control,
-    rules: {
-      required: required ? `${label} is verplicht.` : false,
-      validate: {
-        validDate: (value) =>
-          value === '' ||
-          (typeof value === 'string' && isValidIsoDate(value)) ||
-          'Vul een geldige datum in.',
-        notBeforeMinimum: (value) =>
-          isEmptyOrOnOrAfter(value, minDate) ||
-          `De datum mag niet voor ${formatDate(minDate)} liggen.`,
-        notAfterMaximum: (value) =>
-          isEmptyOrOnOrBefore(value, maxDate) ||
-          `De datum mag niet na ${formatDate(maxDate)} liggen.`,
-      },
-    },
-  })
+  const {
+    errorMessage,
+    fieldName,
+    fieldValue,
+    focusTargetRef,
+    handleBlur,
+    isInvalid,
+    setValue,
+  } = useFormFieldController<TFieldValues>({ name, validateOn })
   const dateDescription =
     description ??
-    `Kies een datum tussen ${formatDate(minDate)} en ${formatDate(maxDate)}.`
-  const errorMessage =
-    typeof fieldState.error?.message === 'string'
-      ? fieldState.error.message
-      : 'Controleer dit veld.'
-  const selectedDate = toCalendarDate(field.value)
-  const minimumDate = parseDate(minDate)
-  const maximumDate = parseDate(maxDate)
+    (minDate && maxDate
+      ? `Kies een datum tussen ${formatDate(minDate)} en ${formatDate(maxDate)}.`
+      : undefined)
+  const selectedDate = toCalendarDate(fieldValue)
+  const minimumDate = minDate ? parseDate(minDate) : undefined
+  const maximumDate = maxDate ? parseDate(maxDate) : undefined
 
   const setDateInputRef = useCallback(
     (element: HTMLDivElement | null) => {
       const firstSegment =
         element?.querySelector<HTMLElement>('[role="spinbutton"]') ?? element
 
-      field.ref(firstSegment)
+      focusTargetRef(firstSegment)
     },
-    [field],
+    [focusTargetRef],
   )
 
-  const handleBlur = async () => {
-    field.onBlur()
-
-    if (validationMode === 'onBlur') {
-      await trigger(name)
-    }
-  }
-
-  const handleChange = async (value: typeof selectedDate) => {
-    field.onChange(value?.toString() ?? '')
-
-    if (validationMode === 'onChange') {
-      await trigger(name)
-    }
+  const handleChange = (value: typeof selectedDate) => {
+    setValue(value?.toString() ?? '')
   }
 
   return (
     <I18nProvider locale="nl-NL">
       <DatePicker
-        name={field.name}
+        name={fieldName}
         value={selectedDate}
         minValue={minimumDate}
         maxValue={maximumDate}
-        isRequired={required}
-        isInvalid={fieldState.invalid}
+        isRequired={isRequired}
+        isInvalid={isInvalid}
         validationBehavior="aria"
         onBlur={handleBlur}
         onChange={handleChange}
@@ -169,7 +121,7 @@ export function DatePickerField<TFieldValues extends FieldValues>({
       >
         <Label className="mb-1.5 block text-sm font-semibold text-foreground">
           {label}
-          {required && (
+          {isRequired && (
             <>
               <span className="text-danger" aria-hidden="true">
                 {' '}
@@ -182,7 +134,7 @@ export function DatePickerField<TFieldValues extends FieldValues>({
 
         <Group
           className={`flex w-full items-center rounded-control border bg-surface text-base text-foreground shadow-sm transition ${
-            fieldState.invalid
+            isInvalid
               ? 'border-danger focus-within:border-danger focus-within:ring-4 focus-within:ring-danger/10'
               : 'border-border hover:border-muted-foreground/60 focus-within:border-primary focus-within:ring-4 focus-within:ring-primary-soft'
           }`}
@@ -220,14 +172,17 @@ export function DatePickerField<TFieldValues extends FieldValues>({
           </Button>
         </Group>
 
-        <Text slot="description" className="mt-2 block text-sm text-muted-foreground">
-          {dateDescription}
-        </Text>
-
-        {fieldState.invalid && (
-          <FieldError
-            className="mt-1.5 text-sm font-medium text-danger"
+        {dateDescription && (
+          <Text
+            slot="description"
+            className="mt-2 block text-sm text-muted-foreground"
           >
+            {dateDescription}
+          </Text>
+        )}
+
+        {isInvalid && (
+          <FieldError className="mt-1.5 text-sm font-medium text-danger">
             {errorMessage}
           </FieldError>
         )}

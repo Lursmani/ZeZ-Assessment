@@ -1,10 +1,9 @@
-export type PersonalInfo = {
-  firstName: string
-  lastName: string
-  birthDate: string
-  email: string
-  address: string
-}
+import type { z } from 'zod'
+import type { insuranceFormSchema } from './validation'
+
+export type InsuranceFormValues = z.infer<typeof insuranceFormSchema>
+
+export type PersonalInfo = InsuranceFormValues['personal']
 
 export type InsuranceOption = {
   id: string
@@ -20,10 +19,4 @@ export type InsuranceApplicationPayload = {
   personal: PersonalInfo
   basicInsurance: Plan
   additionalInsurance: Addon[]
-}
-
-export type InsuranceFormValues = {
-  personal: PersonalInfo
-  basicInsuranceId: string
-  additionalInsuranceIds: string[]
 }

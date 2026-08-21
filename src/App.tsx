@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { zodResolver } from '@hookform/resolvers/zod'
 import { FormProvider, useForm } from 'react-hook-form'
 import type { SubmitHandler } from 'react-hook-form'
 import {
@@ -7,10 +8,12 @@ import {
 } from './features/insurance-form/form-config'
 import { PersonalInfoStep } from './features/insurance-form/steps/PersonalInfoStep'
 import type { InsuranceFormValues } from './features/insurance-form/types'
+import { insuranceFormSchema } from './features/insurance-form/validation'
 
 function App() {
   const [currentStep, setCurrentStep] = useState(0)
   const form = useForm<InsuranceFormValues>({
+    resolver: zodResolver(insuranceFormSchema, undefined, { mode: 'sync' }),
     defaultValues: formDefaultValues,
     mode: 'onSubmit',
     reValidateMode: 'onSubmit',
@@ -146,6 +149,7 @@ function App() {
                 type="button"
                 className="rounded-control px-4 py-2.5 text-sm font-semibold text-foreground transition hover:bg-border focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus disabled:cursor-not-allowed disabled:opacity-40"
                 onClick={goBack}
+                onPointerDown={(event) => event.preventDefault()}
                 disabled={currentStep === 0}
               >
                 Vorige
@@ -155,6 +159,7 @@ function App() {
                 type={isLastStep ? 'submit' : 'button'}
                 className="rounded-control bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground shadow-sm transition hover:bg-primary-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus disabled:cursor-not-allowed disabled:opacity-40"
                 onClick={isLastStep ? undefined : goForward}
+                onPointerDown={(event) => event.preventDefault()}
                 disabled={form.formState.isSubmitting}
               >
                 {isLastStep ? 'Versturen' : 'Volgende'}

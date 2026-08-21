@@ -1,8 +1,7 @@
 import { DatePickerField } from '../../../components/form/DatePickerField'
 import { TextInputField } from '../../../components/form/TextInputField'
 import type { InsuranceFormValues } from '../types'
-
-const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+import { birthDateBounds } from '../validation'
 
 export function PersonalInfoStep() {
   return (
@@ -11,23 +10,25 @@ export function PersonalInfoStep() {
         name="personal.firstName"
         label="Voornaam"
         autoComplete="given-name"
-        validationMode="onBlur"
-        required
+        validateOn="blur"
+        isRequired
       />
 
       <TextInputField<InsuranceFormValues>
         name="personal.lastName"
         label="Achternaam"
         autoComplete="family-name"
-        validationMode="onBlur"
-        required
+        validateOn="blur"
+        isRequired
       />
 
       <DatePickerField<InsuranceFormValues>
         name="personal.birthDate"
         label="Geboortedatum"
-        validationMode="onBlur"
-        required
+        minDate={birthDateBounds.minimum}
+        maxDate={birthDateBounds.maximum}
+        validateOn="blur"
+        isRequired
       />
 
       <div>
@@ -37,14 +38,8 @@ export function PersonalInfoStep() {
           type="email"
           inputMode="email"
           autoComplete="email"
-          validationMode="onBlur"
-          rules={{
-            pattern: {
-              value: emailPattern,
-              message: 'Vul een geldig e-mailadres in.',
-            },
-          }}
-          required
+          validateOn="blur"
+          isRequired
         />
       </div>
 
@@ -53,8 +48,8 @@ export function PersonalInfoStep() {
           name="personal.address"
           label="Adres"
           autoComplete="street-address"
-          validationMode="onBlur"
-          required
+          validateOn="blur"
+          isRequired
         />
       </div>
     </div>
