@@ -5,13 +5,15 @@ import {
   formDefaultValues,
   formSteps,
 } from './features/insurance-form/form-config'
+import { PersonalInfoStep } from './features/insurance-form/steps/PersonalInfoStep'
 import type { InsuranceFormValues } from './features/insurance-form/types'
 
 function App() {
   const [currentStep, setCurrentStep] = useState(0)
   const form = useForm<InsuranceFormValues>({
     defaultValues: formDefaultValues,
-    mode: 'onTouched',
+    mode: 'onSubmit',
+    reValidateMode: 'onSubmit',
     shouldUnregister: false,
   })
 
@@ -133,6 +135,10 @@ function App() {
               >
                 {activeStep.label}
               </h2>
+
+              <div className="mt-6">
+                {currentStep === 0 && <PersonalInfoStep />}
+              </div>
             </section>
 
             <footer className="flex items-center justify-between border-t border-border bg-surface-muted px-6 py-4 sm:px-10">
