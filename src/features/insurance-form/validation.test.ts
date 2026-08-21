@@ -9,7 +9,7 @@ function getIssuePaths(result: ReturnType<typeof insuranceFormSchema.safeParse>)
 }
 
 describe('insuranceFormSchema', () => {
-  it('reports every required personal field for an empty form', () => {
+  it('reports every required field for an empty form', () => {
     const result = insuranceFormSchema.safeParse(formDefaultValues)
 
     expect(getIssuePaths(result)).toEqual([
@@ -18,6 +18,7 @@ describe('insuranceFormSchema', () => {
       'personal.birthDate',
       'personal.email',
       'personal.address',
+      'basicInsuranceId',
     ])
   })
 

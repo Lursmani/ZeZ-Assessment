@@ -61,6 +61,6 @@ export const insuranceFormSchema = z.object({
     ),
     address: requiredText('Adres'),
   }),
-  basicInsuranceId: z.string(),
+  basicInsuranceId: z.string().min(1, 'Kies een basisverzekering.'),
   additionalInsuranceIds: z.array(z.string()),
 })
