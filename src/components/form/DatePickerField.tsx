@@ -1,5 +1,5 @@
-import { parseDate } from '@internationalized/date'
-import { useCallback } from 'react'
+import { parseDate } from "@internationalized/date";
+import { useCallback } from "react";
 import {
   Button,
   Calendar,
@@ -19,57 +19,57 @@ import {
   Label,
   Popover,
   Text,
-} from 'react-aria-components'
-import type { FieldValues } from 'react-hook-form'
-import type { BaseFormFieldProps } from './field-types'
-import { useFormFieldController } from './useFormFieldController'
+} from "react-aria-components";
+import type { FieldValues } from "react-hook-form";
+import type { BaseFormFieldProps } from "./field-types";
+import { useFormFieldController } from "./useFormFieldController";
 
 function isValidIsoDate(value: string) {
-  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value)
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value);
 
   if (!match) {
-    return false
+    return false;
   }
 
-  const [, year, month, day] = match
-  const date = new Date(Date.UTC(Number(year), Number(month) - 1, Number(day)))
+  const [, year, month, day] = match;
+  const date = new Date(Date.UTC(Number(year), Number(month) - 1, Number(day)));
 
   return (
     date.getUTCFullYear() === Number(year) &&
     date.getUTCMonth() === Number(month) - 1 &&
     date.getUTCDate() === Number(day)
-  )
+  );
 }
 
 function formatDate(value: string) {
-  return new Intl.DateTimeFormat('nl-NL', {
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric',
-    timeZone: 'UTC',
-  }).format(new Date(`${value}T00:00:00Z`))
+  return new Intl.DateTimeFormat("nl-NL", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+    timeZone: "UTC",
+  }).format(new Date(`${value}T00:00:00Z`));
 }
 
 function toCalendarDate(value: unknown) {
-  if (typeof value !== 'string' || !isValidIsoDate(value)) {
-    return null
+  if (typeof value !== "string" || !isValidIsoDate(value)) {
+    return null;
   }
 
-  return parseDate(value)
+  return parseDate(value);
 }
 
 export type DatePickerFieldProps<TFieldValues extends FieldValues> =
   BaseFormFieldProps<TFieldValues> & {
-    minDate?: string
-    maxDate?: string
-  }
+    minDate?: string;
+    maxDate?: string;
+  };
 
 export function DatePickerField<TFieldValues extends FieldValues>({
   name,
   label,
   description,
   isRequired = false,
-  validateOn = 'blur',
+  validateOn = "blur",
   minDate,
   maxDate,
 }: DatePickerFieldProps<TFieldValues>) {
@@ -81,29 +81,24 @@ export function DatePickerField<TFieldValues extends FieldValues>({
     handleBlur,
     isInvalid,
     setValue,
-  } = useFormFieldController<TFieldValues>({ name, validateOn })
-  const dateDescription =
-    description ??
-    (minDate && maxDate
-      ? `Kies een datum tussen ${formatDate(minDate)} en ${formatDate(maxDate)}.`
-      : undefined)
-  const selectedDate = toCalendarDate(fieldValue)
-  const minimumDate = minDate ? parseDate(minDate) : undefined
-  const maximumDate = maxDate ? parseDate(maxDate) : undefined
+  } = useFormFieldController<TFieldValues>({ name, validateOn });
+  const selectedDate = toCalendarDate(fieldValue);
+  const minimumDate = minDate ? parseDate(minDate) : undefined;
+  const maximumDate = maxDate ? parseDate(maxDate) : undefined;
 
   const setDateInputRef = useCallback(
     (element: HTMLDivElement | null) => {
       const firstSegment =
-        element?.querySelector<HTMLElement>('[role="spinbutton"]') ?? element
+        element?.querySelector<HTMLElement>('[role="spinbutton"]') ?? element;
 
-      focusTargetRef(firstSegment)
+      focusTargetRef(firstSegment);
     },
     [focusTargetRef],
-  )
+  );
 
   const handleChange = (value: typeof selectedDate) => {
-    setValue(value?.toString() ?? '')
-  }
+    setValue(value?.toString() ?? "");
+  };
 
   return (
     <I18nProvider locale="nl-NL">
@@ -124,7 +119,7 @@ export function DatePickerField<TFieldValues extends FieldValues>({
           {isRequired && (
             <>
               <span className="text-danger" aria-hidden="true">
-                {' '}
+                {" "}
                 *
               </span>
               <span className="sr-only"> (verplicht)</span>
@@ -135,8 +130,8 @@ export function DatePickerField<TFieldValues extends FieldValues>({
         <Group
           className={`flex w-full items-center rounded-control border bg-surface text-base text-foreground shadow-sm transition ${
             isInvalid
-              ? 'border-danger focus-within:border-danger focus-within:ring-4 focus-within:ring-danger/10'
-              : 'border-border hover:border-muted-foreground/60 focus-within:border-primary focus-within:ring-4 focus-within:ring-primary-soft'
+              ? "border-danger focus-within:border-danger focus-within:ring-4 focus-within:ring-danger/10"
+              : "border-border hover:border-muted-foreground/60 focus-within:border-primary focus-within:ring-4 focus-within:ring-primary-soft"
           }`}
         >
           <DateInput
@@ -172,12 +167,12 @@ export function DatePickerField<TFieldValues extends FieldValues>({
           </Button>
         </Group>
 
-        {dateDescription && (
+        {description && (
           <Text
             slot="description"
             className="mt-2 block text-sm text-muted-foreground"
           >
-            {dateDescription}
+            {description}
           </Text>
         )}
 
@@ -264,21 +259,21 @@ export function DatePickerField<TFieldValues extends FieldValues>({
                         isToday,
                       }) =>
                         [
-                          'flex size-9 cursor-default items-center justify-center rounded-control text-sm outline-none transition',
+                          "flex size-9 cursor-default items-center justify-center rounded-control text-sm outline-none transition",
                           isSelected
-                            ? 'bg-primary font-semibold text-primary-foreground'
-                            : 'hover:bg-primary-soft hover:text-primary',
+                            ? "bg-primary font-semibold text-primary-foreground"
+                            : "hover:bg-primary-soft hover:text-primary",
                           isToday && !isSelected
-                            ? 'font-semibold text-primary ring-1 ring-primary'
-                            : '',
-                          isOutsideMonth ? 'text-muted-foreground/50' : '',
+                            ? "font-semibold text-primary ring-1 ring-primary"
+                            : "",
+                          isOutsideMonth ? "text-muted-foreground/50" : "",
                           isDisabled
-                            ? 'pointer-events-none text-muted-foreground/35'
-                            : '',
+                            ? "pointer-events-none text-muted-foreground/35"
+                            : "",
                           isFocusVisible
-                            ? 'ring-2 ring-focus ring-offset-2 ring-offset-surface'
-                            : '',
-                        ].join(' ')
+                            ? "ring-2 ring-focus ring-offset-2 ring-offset-surface"
+                            : "",
+                        ].join(" ")
                       }
                     />
                   )}
@@ -289,5 +284,5 @@ export function DatePickerField<TFieldValues extends FieldValues>({
         </Popover>
       </DatePicker>
     </I18nProvider>
-  )
+  );
 }
