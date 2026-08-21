@@ -41,15 +41,6 @@ function isValidIsoDate(value: string) {
   );
 }
 
-function formatDate(value: string) {
-  return new Intl.DateTimeFormat("nl-NL", {
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-    timeZone: "UTC",
-  }).format(new Date(`${value}T00:00:00Z`));
-}
-
 function toCalendarDate(value: unknown) {
   if (typeof value !== "string" || !isValidIsoDate(value)) {
     return null;
