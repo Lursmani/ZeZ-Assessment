@@ -1,3 +1,4 @@
+import { DatePickerField } from '../../../components/form/DatePickerField'
 import { TextInputField } from '../../../components/form/TextInputField'
 import type { InsuranceFormValues } from '../types'
 
@@ -22,7 +23,14 @@ export function PersonalInfoStep() {
         required
       />
 
-      <div className="sm:col-span-2">
+      <DatePickerField<InsuranceFormValues>
+        name="personal.birthDate"
+        label="Geboortedatum"
+        validationMode="onBlur"
+        required
+      />
+
+      <div>
         <TextInputField<InsuranceFormValues>
           name="personal.email"
           label="E-mailadres"

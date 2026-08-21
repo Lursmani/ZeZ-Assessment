@@ -14,6 +14,7 @@ export const formSteps: FormStep[] = [
     fields: [
       'personal.firstName',
       'personal.lastName',
+      'personal.birthDate',
       'personal.email',
       'personal.address',
     ],
