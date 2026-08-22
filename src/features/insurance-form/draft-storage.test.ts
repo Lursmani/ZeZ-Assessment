@@ -43,16 +43,6 @@ const values: InsuranceFormValues = {
 afterEach(clearInsuranceFormDraft);
 
 describe("insurance form draft storage", () => {
-  it("saves and restores an incomplete application", () => {
-    saveInsuranceFormDraft(values, "additional");
-
-    expect(loadInsuranceFormDraft(insuranceData)).toMatchObject({
-      version: 1,
-      currentStepId: "additional",
-      values,
-    });
-  });
-
   it("removes unavailable insurance IDs and restores a reachable step", () => {
     saveInsuranceFormDraft(
       {

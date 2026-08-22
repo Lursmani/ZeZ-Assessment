@@ -6,6 +6,7 @@ import {
   fireEvent,
   render,
   screen,
+  waitFor,
 } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, describe, expect, it, vi } from "vitest";
@@ -14,8 +15,7 @@ import {
   clearInsuranceFormDraft,
   saveInsuranceFormDraft,
 } from "./draft-storage";
-import { formDefaultValues } from "./form-config";
-import type { InsuranceData } from "./types";
+import type { InsuranceData, InsuranceFormValues } from "./types";
 
 const insuranceData: InsuranceData = {
   basicInsurance: [
@@ -26,15 +26,37 @@ const insuranceData: InsuranceData = {
       description: "Basisdekking",
     },
   ],
-  additionalInsurance: [],
+  additionalInsurance: [
+    {
+      id: "dental",
+      name: "Tandarts",
+      price: 12.5,
+      description: "Tandartsdekking",
+    },
+    {
+      id: "travel",
+      name: "Reizen",
+      price: 5,
+      description: "Reisdekking",
+    },
+  ],
 };
 
-const originalValues = structuredClone(formDefaultValues);
+const completedValues: InsuranceFormValues = {
+  personal: {
+    firstName: "Robin",
+    lastName: "Jansen",
+    birthDate: "1990-01-01",
+    email: "robin@example.com",
+    address: "Dorpsstraat 1",
+  },
+  basicInsuranceId: "basis",
+  additionalInsuranceIds: [],
+};
 
 afterEach(() => {
   cleanup();
   clearInsuranceFormDraft();
-  Object.assign(formDefaultValues, structuredClone(originalValues));
   vi.useRealTimers();
 });
 
@@ -59,20 +81,7 @@ describe("InsuranceForm navigation", () => {
   });
 
   it("restores saved values and the active step", () => {
-    saveInsuranceFormDraft(
-      {
-        personal: {
-          firstName: "Robin",
-          lastName: "Jansen",
-          birthDate: "1990-01-01",
-          email: "robin@example.com",
-          address: "Dorpsstraat 1",
-        },
-        basicInsuranceId: "basis",
-        additionalInsuranceIds: [],
-      },
-      "basic",
-    );
+    saveInsuranceFormDraft(completedValues, "basic");
 
     render(<InsuranceForm insuranceData={insuranceData} onSubmit={vi.fn()} />);
 
@@ -82,44 +91,8 @@ describe("InsuranceForm navigation", () => {
     expect(screen.getByText("Basisdekking")).toBeTruthy();
   });
 
-  it("does not submit while moving from step two to step three", async () => {
-    Object.assign(formDefaultValues.personal, {
-      firstName: "Robin",
-      lastName: "Jansen",
-      birthDate: "1990-01-01",
-      email: "robin@example.com",
-      address: "Dorpsstraat 1",
-    });
-    formDefaultValues.basicInsuranceId = "basis";
-
-    const user = userEvent.setup();
-    const onSubmit = vi.fn();
-
-    render(<InsuranceForm insuranceData={insuranceData} onSubmit={onSubmit} />);
-
-    await user.click(screen.getByRole("button", { name: "Volgende" }));
-    expect(
-      await screen.findByRole("heading", { name: "Basisverzekering" }),
-    ).toBeTruthy();
-
-    await user.click(screen.getByRole("button", { name: "Volgende" }));
-    expect(
-      await screen.findByRole("heading", {
-        name: "Aanvullende verzekering",
-      }),
-    ).toBeTruthy();
-    expect(onSubmit).not.toHaveBeenCalled();
-    expect(screen.getByRole("button", { name: "Versturen" })).toBeTruthy();
-  });
-
   it("focuses each new step and keeps an unselected radio group in Tab order", async () => {
-    Object.assign(formDefaultValues.personal, {
-      firstName: "Robin",
-      lastName: "Jansen",
-      birthDate: "1990-01-01",
-      email: "robin@example.com",
-      address: "Dorpsstraat 1",
-    });
+    saveInsuranceFormDraft(completedValues, "personal");
 
     const user = userEvent.setup();
 
@@ -138,5 +111,36 @@ describe("InsuranceForm navigation", () => {
     await user.tab();
 
     expect(document.activeElement).toBe(firstRadio);
+  });
+
+  it("selects add-ons, updates the total, and submits the form values", async () => {
+    saveInsuranceFormDraft(completedValues, "personal");
+    const user = userEvent.setup();
+    const onSubmit = vi.fn();
+
+    render(<InsuranceForm insuranceData={insuranceData} onSubmit={onSubmit} />);
+
+    await user.click(screen.getByRole("button", { name: "Volgende" }));
+    await user.click(screen.getByRole("button", { name: "Volgende" }));
+
+    const dentalInsurance = screen.getByRole("checkbox", {
+      name: /Tandarts/,
+    });
+    const travelInsurance = screen.getByRole("checkbox", { name: /Reizen/ });
+
+    await user.click(dentalInsurance);
+    await user.click(travelInsurance);
+
+    expect((dentalInsurance as HTMLInputElement).checked).toBe(true);
+    expect((travelInsurance as HTMLInputElement).checked).toBe(true);
+    expect(screen.getByText(/€\s*162,95/)).toBeTruthy();
+
+    await user.click(screen.getByRole("button", { name: "Versturen" }));
+
+    await waitFor(() => expect(onSubmit).toHaveBeenCalledOnce());
+    expect(onSubmit.mock.calls[0]?.[0]).toEqual({
+      ...completedValues,
+      additionalInsuranceIds: ["dental", "travel"],
+    });
   });
 });

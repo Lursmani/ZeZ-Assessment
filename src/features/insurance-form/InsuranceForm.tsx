@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Button } from "react-aria-components";
 import { FormProvider, useForm } from "react-hook-form";
 import type { SubmitHandler } from "react-hook-form";
 import { loadInsuranceFormDraft } from "./draft-storage";
@@ -157,40 +158,34 @@ export function InsuranceForm({ insuranceData, onSubmit }: InsuranceFormProps) {
         </section>
 
         <footer className="flex items-center justify-between border-t border-border bg-surface-muted px-6 py-4 sm:px-10">
-          <button
+          <Button
             type="button"
             className="rounded-control px-4 py-2.5 text-sm font-semibold text-foreground transition hover:bg-border focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus disabled:cursor-not-allowed disabled:opacity-40"
-            onClick={goBack}
-            onPointerDown={(event) => event.preventDefault()}
-            disabled={currentStep === 0 || form.formState.isSubmitting}
+            onPress={goBack}
+            isDisabled={currentStep === 0 || form.formState.isSubmitting}
           >
             Vorige
-          </button>
+          </Button>
 
           {isLastStep ? (
-            <button
+            <Button
               type="submit"
               className="rounded-control bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground shadow-sm transition hover:bg-primary-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus disabled:cursor-not-allowed disabled:opacity-40"
-              onPointerDown={(event) => event.preventDefault()}
-              disabled={form.formState.isSubmitting}
+              isDisabled={form.formState.isSubmitting}
             >
               {form.formState.isSubmitting
                 ? "Bezig met versturen…"
                 : "Versturen"}
-            </button>
+            </Button>
           ) : (
-            <button
+            <Button
               type="button"
               className="rounded-control bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground shadow-sm transition hover:bg-primary-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus disabled:cursor-not-allowed disabled:opacity-40"
-              onClick={(event) => {
-                event.preventDefault();
-                void goForward();
-              }}
-              onPointerDown={(event) => event.preventDefault()}
-              disabled={form.formState.isSubmitting}
+              onPress={() => void goForward()}
+              isDisabled={form.formState.isSubmitting}
             >
               Volgende
-            </button>
+            </Button>
           )}
         </footer>
       </form>

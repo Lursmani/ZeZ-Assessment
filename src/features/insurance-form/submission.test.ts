@@ -1,7 +1,6 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import {
   createInsuranceApplicationPayload,
-  insuranceApplicationEndpoint,
   submitInsuranceApplication,
 } from "./submission";
 import type { InsuranceData } from "./types";
@@ -64,8 +63,7 @@ describe("insurance application submission", () => {
 
     await submitInsuranceApplication(payload);
 
-    expect(insuranceApplicationEndpoint).toBe("/api/insurance-applications");
-    expect(fetchMock).toHaveBeenCalledWith(insuranceApplicationEndpoint, {
+    expect(fetchMock).toHaveBeenCalledWith("/api/insurance-applications", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
