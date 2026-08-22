@@ -3,6 +3,8 @@ import type { insuranceFormSchema } from "./validation";
 
 export type InsuranceFormValues = z.infer<typeof insuranceFormSchema>;
 
+export type InsuranceFormStepId = "personal" | "basic" | "additional";
+
 export type PersonalInfo = InsuranceFormValues["personal"];
 
 export type InsuranceOption = {

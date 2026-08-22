@@ -2,8 +2,10 @@ import { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FormProvider, useForm } from "react-hook-form";
 import type { SubmitHandler } from "react-hook-form";
+import { loadInsuranceFormDraft } from "./draft-storage";
 import { formDefaultValues, formSteps } from "./form-config";
 import type { InsuranceData, InsuranceFormValues } from "./types";
+import { useInsuranceFormDraft } from "./useInsuranceFormDraft";
 import { insuranceFormSchema } from "./validation";
 
 type InsuranceFormProps = {
@@ -12,10 +14,17 @@ type InsuranceFormProps = {
 };
 
 export function InsuranceForm({ insuranceData, onSubmit }: InsuranceFormProps) {
-  const [currentStep, setCurrentStep] = useState(0);
+  const [initialDraft] = useState(() => loadInsuranceFormDraft(insuranceData));
+  const [currentStep, setCurrentStep] = useState(() => {
+    const savedStepIndex = formSteps.findIndex(
+      (step) => step.id === initialDraft?.currentStepId,
+    );
+
+    return savedStepIndex >= 0 ? savedStepIndex : 0;
+  });
   const form = useForm<InsuranceFormValues>({
     resolver: zodResolver(insuranceFormSchema, undefined, { mode: "sync" }),
-    defaultValues: formDefaultValues,
+    defaultValues: initialDraft?.values ?? formDefaultValues,
     mode: "onSubmit",
     reValidateMode: "onSubmit",
     shouldUnregister: false,
@@ -24,6 +33,12 @@ export function InsuranceForm({ insuranceData, onSubmit }: InsuranceFormProps) {
   const activeStep = formSteps[currentStep];
   const ActiveStep = activeStep.component;
   const isLastStep = currentStep === formSteps.length - 1;
+
+  useInsuranceFormDraft({
+    control: form.control,
+    currentStepId: activeStep.id,
+    getValues: form.getValues,
+  });
 
   const goBack = () => {
     setCurrentStep((step) => Math.max(step - 1, 0));

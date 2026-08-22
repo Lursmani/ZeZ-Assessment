@@ -1,9 +1,19 @@
 // @vitest-environment jsdom
 
-import { render, screen } from "@testing-library/react";
+import {
+  act,
+  cleanup,
+  fireEvent,
+  render,
+  screen,
+} from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { InsuranceForm } from "./InsuranceForm";
+import {
+  clearInsuranceFormDraft,
+  saveInsuranceFormDraft,
+} from "./draft-storage";
 import { formDefaultValues } from "./form-config";
 import type { InsuranceData } from "./types";
 
@@ -22,10 +32,56 @@ const insuranceData: InsuranceData = {
 const originalValues = structuredClone(formDefaultValues);
 
 afterEach(() => {
+  cleanup();
+  clearInsuranceFormDraft();
   Object.assign(formDefaultValues, structuredClone(originalValues));
+  vi.useRealTimers();
 });
 
 describe("InsuranceForm navigation", () => {
+  it("autosaves changes and restores them after a remount", () => {
+    vi.useFakeTimers();
+    const firstRender = render(
+      <InsuranceForm insuranceData={insuranceData} onSubmit={vi.fn()} />,
+    );
+    const firstNameInput = screen.getByRole("textbox", { name: /Voornaam/ });
+
+    fireEvent.change(firstNameInput, { target: { value: "Robin" } });
+    act(() => vi.advanceTimersByTime(250));
+    firstRender.unmount();
+
+    render(<InsuranceForm insuranceData={insuranceData} onSubmit={vi.fn()} />);
+
+    expect(
+      (screen.getByRole("textbox", { name: /Voornaam/ }) as HTMLInputElement)
+        .value,
+    ).toBe("Robin");
+  });
+
+  it("restores saved values and the active step", () => {
+    saveInsuranceFormDraft(
+      {
+        personal: {
+          firstName: "Robin",
+          lastName: "Jansen",
+          birthDate: "1990-01-01",
+          email: "robin@example.com",
+          address: "Dorpsstraat 1",
+        },
+        basicInsuranceId: "basis",
+        additionalInsuranceIds: [],
+      },
+      "basic",
+    );
+
+    render(<InsuranceForm insuranceData={insuranceData} onSubmit={vi.fn()} />);
+
+    expect(
+      screen.getByRole("heading", { name: "Basisverzekering" }),
+    ).toBeTruthy();
+    expect(screen.getByText("Basisdekking")).toBeTruthy();
+  });
+
   it("does not submit while moving from step two to step three", async () => {
     Object.assign(formDefaultValues.personal, {
       firstName: "Robin",

@@ -2,6 +2,7 @@ import { useState } from "react";
 import type { SubmitHandler } from "react-hook-form";
 import { InsuranceForm } from "./features/insurance-form/InsuranceForm";
 import { SubmissionSuccess } from "./features/insurance-form/SubmissionSuccess";
+import { clearInsuranceFormDraft } from "./features/insurance-form/draft-storage";
 import {
   createInsuranceApplicationPayload,
   submitInsuranceApplication,
@@ -30,6 +31,7 @@ function App() {
       const payload = createInsuranceApplicationPayload(values, insuranceData);
 
       await submitInsuranceApplication(payload);
+      clearInsuranceFormDraft();
       setSubmissionState("success");
     } catch {
       setSubmissionState("error");
