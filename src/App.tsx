@@ -1,10 +1,37 @@
+import { useState } from "react";
 import type { SubmitHandler } from "react-hook-form";
+import insuranceData from "../insuranceData.json";
 import { InsuranceForm } from "./features/insurance-form/InsuranceForm";
+import { SubmissionSuccess } from "./features/insurance-form/SubmissionSuccess";
+import {
+  createInsuranceApplicationPayload,
+  submitInsuranceApplication,
+} from "./features/insurance-form/submission";
 import type { InsuranceFormValues } from "./features/insurance-form/types";
+import type { InsuranceData } from "./features/insurance-form/useInsuranceData";
+
+type SubmissionState = "idle" | "success" | "error";
 
 function App() {
-  const handleFormSubmit: SubmitHandler<InsuranceFormValues> = (values) => {
-    console.info("Insurance form submitted", values);
+  const [submissionState, setSubmissionState] =
+    useState<SubmissionState>("idle");
+
+  const handleFormSubmit: SubmitHandler<InsuranceFormValues> = async (
+    values,
+  ) => {
+    setSubmissionState("idle");
+
+    try {
+      const payload = createInsuranceApplicationPayload(
+        values,
+        insuranceData as InsuranceData,
+      );
+
+      await submitInsuranceApplication(payload);
+      setSubmissionState("success");
+    } catch {
+      setSubmissionState("error");
+    }
   };
 
   return (
@@ -19,7 +46,22 @@ function App() {
           </h1>
         </header>
 
-        <InsuranceForm onSubmit={handleFormSubmit} />
+        {submissionState === "success" ? (
+          <SubmissionSuccess onRestart={() => setSubmissionState("idle")} />
+        ) : (
+          <>
+            {submissionState === "error" && (
+              <div
+                className="mb-5 rounded-card border border-danger/30 bg-danger/5 px-5 py-4 text-sm font-medium text-danger"
+                role="alert"
+              >
+                Je aanvraag kon niet worden verzonden. Probeer het opnieuw.
+              </div>
+            )}
+
+            <InsuranceForm onSubmit={handleFormSubmit} />
+          </>
+        )}
       </div>
     </main>
   );

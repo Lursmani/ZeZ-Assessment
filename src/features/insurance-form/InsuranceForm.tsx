@@ -135,20 +135,36 @@ export function InsuranceForm({ onSubmit }: InsuranceFormProps) {
             className="rounded-control px-4 py-2.5 text-sm font-semibold text-foreground transition hover:bg-border focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus disabled:cursor-not-allowed disabled:opacity-40"
             onClick={goBack}
             onPointerDown={(event) => event.preventDefault()}
-            disabled={currentStep === 0}
+            disabled={currentStep === 0 || form.formState.isSubmitting}
           >
             Vorige
           </button>
 
-          <button
-            type={isLastStep ? "submit" : "button"}
-            className="rounded-control bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground shadow-sm transition hover:bg-primary-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus disabled:cursor-not-allowed disabled:opacity-40"
-            onClick={isLastStep ? undefined : goForward}
-            onPointerDown={(event) => event.preventDefault()}
-            disabled={form.formState.isSubmitting}
-          >
-            {isLastStep ? "Versturen" : "Volgende"}
-          </button>
+          {isLastStep ? (
+            <button
+              type="submit"
+              className="rounded-control bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground shadow-sm transition hover:bg-primary-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus disabled:cursor-not-allowed disabled:opacity-40"
+              onPointerDown={(event) => event.preventDefault()}
+              disabled={form.formState.isSubmitting}
+            >
+              {form.formState.isSubmitting
+                ? "Bezig met versturen…"
+                : "Versturen"}
+            </button>
+          ) : (
+            <button
+              type="button"
+              className="rounded-control bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground shadow-sm transition hover:bg-primary-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus disabled:cursor-not-allowed disabled:opacity-40"
+              onClick={(event) => {
+                event.preventDefault();
+                void goForward();
+              }}
+              onPointerDown={(event) => event.preventDefault()}
+              disabled={form.formState.isSubmitting}
+            >
+              Volgende
+            </button>
+          )}
         </footer>
       </form>
     </FormProvider>
