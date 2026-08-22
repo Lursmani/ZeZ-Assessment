@@ -51,7 +51,12 @@ Form values and the active step are restored after a reload. `sessionStorage` wa
 
 ## With more time
 
-- Add a real backend with server-side validation, authentication, and persistent storage.
-- Add more integration and end-to-end tests, including error scenarios and keyboard navigation.
-- Make the insurance data and API URL configurable for each environment.
+- Add a simple backend to persist submitted applications.
+- Add end-to-end tests, including error scenarios and keyboard navigation.
 - Add internationalization and more extensive monitoring.
+- Add dark mode support.
+- Add Tanstack router to prepare for a more complex application with multiple routes and nested layouts.
+
+## AI Disclaimer
+
+This assignment was completed with the assistance of GPT 5.6 model family. The AI was used to generate code snippets, provide suggestions, and assist with problem-solving and reviews. Architectural decisions were made by me. All code and decisions were reviewed and modified by me to ensure correctness, functionality, and adherence to best practices.
