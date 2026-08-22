@@ -111,4 +111,32 @@ describe("InsuranceForm navigation", () => {
     expect(onSubmit).not.toHaveBeenCalled();
     expect(screen.getByRole("button", { name: "Versturen" })).toBeTruthy();
   });
+
+  it("focuses each new step and keeps an unselected radio group in Tab order", async () => {
+    Object.assign(formDefaultValues.personal, {
+      firstName: "Robin",
+      lastName: "Jansen",
+      birthDate: "1990-01-01",
+      email: "robin@example.com",
+      address: "Dorpsstraat 1",
+    });
+
+    const user = userEvent.setup();
+
+    render(<InsuranceForm insuranceData={insuranceData} onSubmit={vi.fn()} />);
+
+    await user.click(screen.getByRole("button", { name: "Volgende" }));
+
+    const heading = await screen.findByRole("heading", {
+      name: "Basisverzekering",
+    });
+    const firstRadio = screen.getByRole("radio", { name: /Basis/ });
+
+    expect(document.activeElement).toBe(heading);
+    expect((firstRadio as HTMLInputElement).tabIndex).toBe(0);
+
+    await user.tab();
+
+    expect(document.activeElement).toBe(firstRadio);
+  });
 });

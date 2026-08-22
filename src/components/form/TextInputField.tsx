@@ -95,7 +95,7 @@ export function TextInputField<TFieldValues extends FieldValues>({
         className={`block w-full rounded-control border bg-surface px-3.5 py-2.5 text-base text-foreground shadow-sm outline-none transition placeholder:text-muted-foreground/70 disabled:cursor-not-allowed disabled:bg-surface-muted disabled:text-muted-foreground ${
           isInvalid
             ? "border-danger focus:border-danger focus:ring-4 focus:ring-danger/10"
-            : "border-border hover:border-muted-foreground/60 focus:border-primary focus:ring-4 focus:ring-primary-soft"
+            : "border-control-border hover:border-primary focus:border-primary focus:ring-4 focus:ring-primary-soft"
         }`}
       />
 

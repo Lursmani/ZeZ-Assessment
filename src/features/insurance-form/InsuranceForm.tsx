@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FormProvider, useForm } from "react-hook-form";
 import type { SubmitHandler } from "react-hook-form";
@@ -33,6 +33,15 @@ export function InsuranceForm({ insuranceData, onSubmit }: InsuranceFormProps) {
   const activeStep = formSteps[currentStep];
   const ActiveStep = activeStep.component;
   const isLastStep = currentStep === formSteps.length - 1;
+  const activeStepHeadingRef = useRef<HTMLHeadingElement>(null);
+  const previousStepRef = useRef(currentStep);
+
+  useEffect(() => {
+    if (previousStepRef.current !== currentStep) {
+      activeStepHeadingRef.current?.focus();
+      previousStepRef.current = currentStep;
+    }
+  }, [currentStep]);
 
   useInsuranceFormDraft({
     control: form.control,
@@ -65,7 +74,7 @@ export function InsuranceForm({ insuranceData, onSubmit }: InsuranceFormProps) {
           className="border-b border-border px-4 py-6 sm:px-8"
           aria-label="Voortgang aanvraag"
         >
-          <p className="sr-only" aria-live="polite">
+          <p className="sr-only">
             Stap {currentStep + 1} van {formSteps.length}: {activeStep.label}
           </p>
 
@@ -134,8 +143,10 @@ export function InsuranceForm({ insuranceData, onSubmit }: InsuranceFormProps) {
           aria-labelledby={`${activeStep.id}-heading`}
         >
           <h2
+            ref={activeStepHeadingRef}
             id={`${activeStep.id}-heading`}
-            className="text-xl font-semibold text-foreground"
+            className="text-xl font-semibold text-foreground outline-none"
+            tabIndex={-1}
           >
             {activeStep.label}
           </h2>

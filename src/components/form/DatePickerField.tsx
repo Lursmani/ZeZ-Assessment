@@ -122,7 +122,7 @@ export function DatePickerField<TFieldValues extends FieldValues>({
           className={`flex w-full items-center rounded-control border bg-surface text-base text-foreground shadow-sm transition ${
             isInvalid
               ? "border-danger focus-within:border-danger focus-within:ring-4 focus-within:ring-danger/10"
-              : "border-border hover:border-muted-foreground/60 focus-within:border-primary focus-within:ring-4 focus-within:ring-primary-soft"
+              : "border-control-border hover:border-primary focus-within:border-primary focus-within:ring-4 focus-within:ring-primary-soft"
           }`}
         >
           <DateInput

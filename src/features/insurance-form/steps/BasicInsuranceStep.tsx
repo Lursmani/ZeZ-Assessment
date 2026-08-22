@@ -47,7 +47,7 @@ export function BasicInsuranceStep({ insuranceData }: BasicInsuranceStepProps) {
   return (
     <RadioGroup
       name={field.name}
-      value={field.value}
+      value={field.value || null}
       isRequired
       isInvalid={fieldState.invalid}
       validationBehavior="aria"
@@ -85,10 +85,10 @@ export function BasicInsuranceStep({ insuranceData }: BasicInsuranceStepProps) {
                     isSelected
                       ? "border-primary bg-primary-soft shadow-sm"
                       : isInvalid
-                        ? "border-danger/50 bg-surface"
+                        ? "border-danger bg-surface"
                         : isHovered
-                          ? "border-primary/60 bg-surface shadow-sm"
-                          : "border-border bg-surface",
+                          ? "border-primary bg-surface shadow-sm"
+                          : "border-control-border bg-surface",
                     isFocusVisible
                       ? "ring-2 ring-focus ring-offset-2 ring-offset-surface"
                       : "",
@@ -105,7 +105,7 @@ export function BasicInsuranceStep({ insuranceData }: BasicInsuranceStepProps) {
                         className={`mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full border ${
                           isSelected
                             ? "border-primary bg-primary"
-                            : "border-muted-foreground/50 bg-surface"
+                            : "border-control-border bg-surface"
                         }`}
                         aria-hidden="true"
                       >

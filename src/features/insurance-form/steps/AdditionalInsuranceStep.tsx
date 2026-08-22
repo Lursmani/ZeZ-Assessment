@@ -80,8 +80,8 @@ export function AdditionalInsuranceStep({
                     isSelected
                       ? "border-primary bg-primary-soft shadow-sm"
                       : isHovered
-                        ? "border-primary/60 bg-surface shadow-sm"
-                        : "border-border bg-surface",
+                        ? "border-primary bg-surface shadow-sm"
+                        : "border-control-border bg-surface",
                     isFocusVisible
                       ? "ring-2 ring-focus ring-offset-2 ring-offset-surface"
                       : "",
@@ -98,7 +98,7 @@ export function AdditionalInsuranceStep({
                         className={`mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-control border ${
                           isSelected
                             ? "border-primary bg-primary text-primary-foreground"
-                            : "border-muted-foreground/50 bg-surface"
+                            : "border-control-border bg-surface"
                         }`}
                         aria-hidden="true"
                       >

@@ -6,14 +6,15 @@
   --theme-surface: #ffffff;
   --theme-surface-muted: #f1f5f9;
   --theme-foreground: #0f172a;
-  --theme-muted-foreground: #64748b;
+  --theme-muted-foreground: #475569;
   --theme-border: #e2e8f0;
+  --theme-control-border: #7c8799;
   --theme-primary: #4f46e5;
   --theme-primary-hover: #4338ca;
   --theme-primary-soft: #eef2ff;
   --theme-primary-foreground: #ffffff;
   --theme-success: #15803d;
-  --theme-danger: #dc2626;
+  --theme-danger: #b91c1c;
   --theme-focus: #4f46e5;
 
   /* Shape and elevation */
@@ -34,6 +35,7 @@
   --color-foreground: var(--theme-foreground);
   --color-muted-foreground: var(--theme-muted-foreground);
   --color-border: var(--theme-border);
+  --color-control-border: var(--theme-control-border);
   --color-primary: var(--theme-primary);
   --color-primary-hover: var(--theme-primary-hover);
   --color-primary-soft: var(--theme-primary-soft);
