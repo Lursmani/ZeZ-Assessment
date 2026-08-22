@@ -1,5 +1,8 @@
-import type { InsuranceData } from "./useInsuranceData";
-import type { InsuranceApplicationPayload, InsuranceFormValues } from "./types";
+import type {
+  InsuranceApplicationPayload,
+  InsuranceData,
+  InsuranceFormValues,
+} from "./types";
 
 export const insuranceApplicationEndpoint = "/api/insurance-applications";
 

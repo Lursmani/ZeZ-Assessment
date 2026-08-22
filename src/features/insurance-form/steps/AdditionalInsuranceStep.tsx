@@ -6,8 +6,7 @@ import {
   Text,
 } from "react-aria-components";
 import { useController, useFormContext, useWatch } from "react-hook-form";
-import type { InsuranceFormValues } from "../types";
-import { useInsuranceData } from "../useInsuranceData";
+import type { InsuranceData, InsuranceFormValues } from "../types";
 
 const priceFormatter = new Intl.NumberFormat("nl-NL", {
   style: "currency",
@@ -15,9 +14,14 @@ const priceFormatter = new Intl.NumberFormat("nl-NL", {
   minimumFractionDigits: 2,
 });
 
-export function AdditionalInsuranceStep() {
+type AdditionalInsuranceStepProps = {
+  insuranceData: InsuranceData;
+};
+
+export function AdditionalInsuranceStep({
+  insuranceData,
+}: AdditionalInsuranceStepProps) {
   const { control } = useFormContext<InsuranceFormValues>();
-  const { data, error, isLoading, mutate } = useInsuranceData();
   const { field } = useController({
     name: "additionalInsuranceIds",
     control,
@@ -27,41 +31,10 @@ export function AdditionalInsuranceStep() {
     control,
   });
 
-  if (isLoading) {
-    return (
-      <div
-        className="rounded-card border border-border bg-surface-muted px-5 py-8 text-center text-sm text-muted-foreground"
-        role="status"
-      >
-        Aanvullende verzekeringen laden…
-      </div>
-    );
-  }
-
-  if (error || !data) {
-    return (
-      <div
-        className="rounded-card border border-danger/30 bg-danger/5 px-5 py-5"
-        role="alert"
-      >
-        <p className="text-sm font-medium text-danger">
-          De aanvullende verzekeringen konden niet worden geladen.
-        </p>
-        <button
-          type="button"
-          className="mt-3 rounded-control border border-danger/30 bg-surface px-3 py-2 text-sm font-semibold text-danger outline-none transition hover:bg-danger/5 focus-visible:ring-2 focus-visible:ring-focus"
-          onClick={() => void mutate()}
-        >
-          Opnieuw proberen
-        </button>
-      </div>
-    );
-  }
-
-  const basicInsurance = data.basicInsurance.find(
+  const basicInsurance = insuranceData.basicInsurance.find(
     (insurance) => insurance.id === basicInsuranceId,
   );
-  const selectedAdditionalInsurance = data.additionalInsurance.filter(
+  const selectedAdditionalInsurance = insuranceData.additionalInsurance.filter(
     (insurance) => field.value.includes(insurance.id),
   );
   const additionalPrice = selectedAdditionalInsurance.reduce(
@@ -94,7 +67,7 @@ export function AdditionalInsuranceStep() {
         </Text>
 
         <div className="mt-3 grid gap-3 sm:grid-cols-2">
-          {data.additionalInsurance.map((insurance) => (
+          {insuranceData.additionalInsurance.map((insurance) => (
             <CheckboxField
               key={insurance.id}
               value={insurance.id}

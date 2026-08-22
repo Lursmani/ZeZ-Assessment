@@ -1,11 +1,6 @@
 import useSWR from "swr";
-import insuranceDataUrl from "../../../insuranceData.json?url";
-import type { InsuranceOption } from "./types";
-
-export type InsuranceData = {
-  basicInsurance: InsuranceOption[];
-  additionalInsurance: InsuranceOption[];
-};
+import insuranceDataUrl from "../../data/insuranceData.json?url";
+import type { InsuranceData } from "./types";
 
 async function fetchInsuranceData(url: string): Promise<InsuranceData> {
   const response = await fetch(url);

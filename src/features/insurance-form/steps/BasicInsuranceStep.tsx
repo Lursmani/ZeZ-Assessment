@@ -8,8 +8,7 @@ import {
   Text,
 } from "react-aria-components";
 import { useController, useFormContext } from "react-hook-form";
-import type { InsuranceFormValues } from "../types";
-import { useInsuranceData } from "../useInsuranceData";
+import type { InsuranceData, InsuranceFormValues } from "../types";
 
 const priceFormatter = new Intl.NumberFormat("nl-NL", {
   style: "currency",
@@ -17,9 +16,12 @@ const priceFormatter = new Intl.NumberFormat("nl-NL", {
   minimumFractionDigits: 2,
 });
 
-export function BasicInsuranceStep() {
+type BasicInsuranceStepProps = {
+  insuranceData: InsuranceData;
+};
+
+export function BasicInsuranceStep({ insuranceData }: BasicInsuranceStepProps) {
   const { control, trigger } = useFormContext<InsuranceFormValues>();
-  const { data, error, isLoading, mutate } = useInsuranceData();
   const {
     field: { ref: focusTargetRef, ...field },
     fieldState,
@@ -31,40 +33,9 @@ export function BasicInsuranceStep() {
 
   useEffect(() => {
     focusTargetRef(firstInputRef.current);
-  }, [data, focusTargetRef]);
+  }, [focusTargetRef]);
 
-  if (isLoading) {
-    return (
-      <div
-        className="rounded-card border border-border bg-surface-muted px-5 py-8 text-center text-sm text-muted-foreground"
-        role="status"
-      >
-        Basisverzekeringen laden…
-      </div>
-    );
-  }
-
-  if (error || !data?.basicInsurance.length) {
-    return (
-      <div
-        className="rounded-card border border-danger/30 bg-danger/5 px-5 py-5"
-        role="alert"
-      >
-        <p className="text-sm font-medium text-danger">
-          De basisverzekeringen konden niet worden geladen.
-        </p>
-        <button
-          type="button"
-          className="mt-3 rounded-control border border-danger/30 bg-surface px-3 py-2 text-sm font-semibold text-danger outline-none transition hover:bg-danger/5 focus-visible:ring-2 focus-visible:ring-focus"
-          onClick={() => void mutate()}
-        >
-          Opnieuw proberen
-        </button>
-      </div>
-    );
-  }
-
-  const selectedInsurance = data.basicInsurance.find(
+  const selectedInsurance = insuranceData.basicInsurance.find(
     (insurance) => insurance.id === field.value,
   );
 
@@ -94,7 +65,7 @@ export function BasicInsuranceStep() {
       </Label>
 
       <div className="mt-3 grid gap-3 sm:grid-cols-3">
-        {data.basicInsurance.map((insurance, index) => {
+        {insuranceData.basicInsurance.map((insurance, index) => {
           return (
             <RadioField
               key={insurance.id}

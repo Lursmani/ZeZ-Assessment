@@ -12,6 +12,11 @@ export type InsuranceOption = {
   description: string;
 };
 
+export type InsuranceData = {
+  basicInsurance: InsuranceOption[];
+  additionalInsurance: InsuranceOption[];
+};
+
 export type Plan = InsuranceOption;
 export type Addon = InsuranceOption;
 

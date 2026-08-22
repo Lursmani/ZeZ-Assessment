@@ -4,7 +4,7 @@ import {
   insuranceApplicationEndpoint,
   submitInsuranceApplication,
 } from "./submission";
-import type { InsuranceData } from "./useInsuranceData";
+import type { InsuranceData } from "./types";
 
 const insuranceData: InsuranceData = {
   basicInsurance: [

@@ -3,13 +3,13 @@ import type { FieldPath } from "react-hook-form";
 import { AdditionalInsuranceStep } from "./steps/AdditionalInsuranceStep";
 import { BasicInsuranceStep } from "./steps/BasicInsuranceStep";
 import { PersonalInfoStep } from "./steps/PersonalInfoStep";
-import type { InsuranceFormValues } from "./types";
+import type { InsuranceData, InsuranceFormValues } from "./types";
 
 export type FormStep = {
   id: string;
   label: string;
   fields: FieldPath<InsuranceFormValues>[];
-  component: ComponentType;
+  component: ComponentType<{ insuranceData: InsuranceData }>;
 };
 
 export const formSteps: FormStep[] = [

@@ -8,8 +8,27 @@ import {
   waitFor,
 } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import App from "./App";
+
+vi.mock("./features/insurance-form/useInsuranceData", () => ({
+  useInsuranceData: () => ({
+    data: {
+      basicInsurance: [
+        {
+          id: "basis",
+          name: "Basis",
+          price: 145.45,
+          description: "Basisdekking",
+        },
+      ],
+      additionalInsurance: [],
+    },
+    error: undefined,
+    isLoading: false,
+    mutate: vi.fn(),
+  }),
+}));
 
 afterEach(cleanup);
 

@@ -5,25 +5,19 @@ import userEvent from "@testing-library/user-event";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { InsuranceForm } from "./InsuranceForm";
 import { formDefaultValues } from "./form-config";
+import type { InsuranceData } from "./types";
 
-vi.mock("./useInsuranceData", () => ({
-  useInsuranceData: () => ({
-    data: {
-      basicInsurance: [
-        {
-          id: "basis",
-          name: "Basis",
-          price: 145.45,
-          description: "Basisdekking",
-        },
-      ],
-      additionalInsurance: [],
+const insuranceData: InsuranceData = {
+  basicInsurance: [
+    {
+      id: "basis",
+      name: "Basis",
+      price: 145.45,
+      description: "Basisdekking",
     },
-    error: undefined,
-    isLoading: false,
-    mutate: vi.fn(),
-  }),
-}));
+  ],
+  additionalInsurance: [],
+};
 
 const originalValues = structuredClone(formDefaultValues);
 
@@ -45,7 +39,7 @@ describe("InsuranceForm navigation", () => {
     const user = userEvent.setup();
     const onSubmit = vi.fn();
 
-    render(<InsuranceForm onSubmit={onSubmit} />);
+    render(<InsuranceForm insuranceData={insuranceData} onSubmit={onSubmit} />);
 
     await user.click(screen.getByRole("button", { name: "Volgende" }));
     expect(

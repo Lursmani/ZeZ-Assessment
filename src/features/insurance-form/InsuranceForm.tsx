@@ -3,14 +3,15 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { FormProvider, useForm } from "react-hook-form";
 import type { SubmitHandler } from "react-hook-form";
 import { formDefaultValues, formSteps } from "./form-config";
-import type { InsuranceFormValues } from "./types";
+import type { InsuranceData, InsuranceFormValues } from "./types";
 import { insuranceFormSchema } from "./validation";
 
 type InsuranceFormProps = {
+  insuranceData: InsuranceData;
   onSubmit: SubmitHandler<InsuranceFormValues>;
 };
 
-export function InsuranceForm({ onSubmit }: InsuranceFormProps) {
+export function InsuranceForm({ insuranceData, onSubmit }: InsuranceFormProps) {
   const [currentStep, setCurrentStep] = useState(0);
   const form = useForm<InsuranceFormValues>({
     resolver: zodResolver(insuranceFormSchema, undefined, { mode: "sync" }),
@@ -125,7 +126,7 @@ export function InsuranceForm({ onSubmit }: InsuranceFormProps) {
           </h2>
 
           <div className="mt-6">
-            <ActiveStep />
+            <ActiveStep insuranceData={insuranceData} />
           </div>
         </section>
 
