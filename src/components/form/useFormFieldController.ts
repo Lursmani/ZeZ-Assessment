@@ -38,7 +38,9 @@ export function useFormFieldController<TFieldValues extends FieldValues>({
   const setValue = (value: string) => {
     updateFieldValue(value);
 
-    if (validateOn === "change") {
+    // Browser autofill changes the value without necessarily blurring the field.
+    // Once an error is visible, validate changes as well so autofill can clear it.
+    if (validateOn === "change" || fieldState.invalid) {
       void trigger(name);
     }
   };
