@@ -11,6 +11,10 @@ import userEvent from "@testing-library/user-event";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import App from "./App";
 
+const insuranceDataError = vi.hoisted<{ current: Error | undefined }>(() => ({
+  current: undefined,
+}));
+
 vi.mock("./features/insurance-form/useInsuranceData", () => ({
   useInsuranceData: () => ({
     data: {
@@ -24,13 +28,16 @@ vi.mock("./features/insurance-form/useInsuranceData", () => ({
       ],
       additionalInsurance: [],
     },
-    error: undefined,
+    error: insuranceDataError.current,
     isLoading: false,
     mutate: vi.fn(),
   }),
 }));
 
-afterEach(cleanup);
+afterEach(() => {
+  cleanup();
+  insuranceDataError.current = undefined;
+});
 
 describe("insurance form validation", () => {
   it("validates every field in the active step when continuing", async () => {
@@ -61,5 +68,17 @@ describe("insurance form validation", () => {
     await waitFor(() => {
       expect(screen.queryByText("Voornaam is verplicht.")).toBeNull();
     });
+  });
+});
+
+describe("insurance data refresh", () => {
+  it("keeps the form available when cached data has a refresh error", () => {
+    insuranceDataError.current = new Error("Refresh failed");
+
+    render(<App />);
+
+    expect(
+      screen.getByRole("heading", { name: "Persoonlijke gegevens" }),
+    ).toBeTruthy();
   });
 });

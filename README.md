@@ -6,7 +6,7 @@ An accessible multi-step form for applying for health insurance. The user enters
 
 Requirements:
 
-- Node.js 22 or later
+- Node.js 22.12 or later
 - npm
 
 Install the dependencies and start the development server:

@@ -15,7 +15,7 @@ type SubmissionState = "idle" | "success" | "error";
 function App() {
   const [submissionState, setSubmissionState] =
     useState<SubmissionState>("idle");
-  const { data: insuranceData, error, isLoading, mutate } = useInsuranceData();
+  const { data: insuranceData, isLoading, mutate } = useInsuranceData();
 
   const handleFormSubmit: SubmitHandler<InsuranceFormValues> = async (
     values,
@@ -52,14 +52,14 @@ function App() {
 
         {submissionState === "success" ? (
           <SubmissionSuccess onRestart={() => setSubmissionState("idle")} />
-        ) : isLoading ? (
+        ) : isLoading && !insuranceData ? (
           <div
             className="rounded-card border border-border bg-surface px-5 py-10 text-center text-sm text-muted-foreground shadow-card"
             role="status"
           >
             Verzekeringen laden…
           </div>
-        ) : error || !insuranceData ? (
+        ) : !insuranceData ? (
           <div
             className="rounded-card border border-danger/30 bg-surface px-5 py-8 text-center shadow-card"
             role="alert"
