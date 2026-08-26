@@ -5,13 +5,18 @@ import { FormProvider, useForm } from "react-hook-form";
 import type { SubmitHandler } from "react-hook-form";
 import { loadInsuranceFormDraft } from "./draft-storage";
 import { formDefaultValues, formSteps } from "./form-config";
-import type { InsuranceData, InsuranceFormValues } from "./types";
+import { createInsuranceApplicationPayload } from "./submission";
+import type {
+  InsuranceApplicationPayload,
+  InsuranceData,
+  InsuranceFormValues,
+} from "./types";
 import { useInsuranceFormDraft } from "./useInsuranceFormDraft";
 import { insuranceFormSchema } from "./validation";
 
 type InsuranceFormProps = {
   insuranceData: InsuranceData;
-  onSubmit: SubmitHandler<InsuranceFormValues>;
+  onSubmit: (payload: InsuranceApplicationPayload) => void | Promise<void>;
 };
 
 export function InsuranceForm({ insuranceData, onSubmit }: InsuranceFormProps) {
@@ -64,11 +69,17 @@ export function InsuranceForm({ insuranceData, onSubmit }: InsuranceFormProps) {
     }
   };
 
+  const submitForm: SubmitHandler<InsuranceFormValues> = async (values) => {
+    const payload = createInsuranceApplicationPayload(values, insuranceData);
+
+    await onSubmit(payload);
+  };
+
   return (
     <FormProvider {...form}>
       <form
         className="overflow-hidden rounded-card border border-border bg-surface shadow-card"
-        onSubmit={form.handleSubmit(onSubmit)}
+        onSubmit={form.handleSubmit(submitForm)}
         noValidate
       >
         <nav

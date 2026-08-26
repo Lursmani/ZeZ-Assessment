@@ -113,7 +113,7 @@ describe("InsuranceForm navigation", () => {
     expect(document.activeElement).toBe(firstRadio);
   });
 
-  it("selects add-ons, updates the total, and submits the form values", async () => {
+  it("selects add-ons, updates the total, and submits the full payload", async () => {
     saveInsuranceFormDraft(completedValues, "personal");
     const user = userEvent.setup();
     const onSubmit = vi.fn();
@@ -139,8 +139,9 @@ describe("InsuranceForm navigation", () => {
 
     await waitFor(() => expect(onSubmit).toHaveBeenCalledOnce());
     expect(onSubmit.mock.calls[0]?.[0]).toEqual({
-      ...completedValues,
-      additionalInsuranceIds: ["dental", "travel"],
+      personal: completedValues.personal,
+      basicInsurance: insuranceData.basicInsurance[0],
+      additionalInsurance: insuranceData.additionalInsurance,
     });
   });
 });

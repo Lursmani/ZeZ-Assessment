@@ -1,13 +1,9 @@
 import { useState } from "react";
-import type { SubmitHandler } from "react-hook-form";
 import { InsuranceForm } from "./features/insurance-form/InsuranceForm";
 import { SubmissionSuccess } from "./features/insurance-form/SubmissionSuccess";
 import { clearInsuranceFormDraft } from "./features/insurance-form/draft-storage";
-import {
-  createInsuranceApplicationPayload,
-  submitInsuranceApplication,
-} from "./features/insurance-form/submission";
-import type { InsuranceFormValues } from "./features/insurance-form/types";
+import { submitInsuranceApplication } from "./features/insurance-form/submission";
+import type { InsuranceApplicationPayload } from "./features/insurance-form/types";
 import { useInsuranceData } from "./features/insurance-form/useInsuranceData";
 
 type SubmissionState = "idle" | "success" | "error";
@@ -17,19 +13,10 @@ function App() {
     useState<SubmissionState>("idle");
   const { data: insuranceData, isLoading, mutate } = useInsuranceData();
 
-  const handleFormSubmit: SubmitHandler<InsuranceFormValues> = async (
-    values,
-  ) => {
+  const handleFormSubmit = async (payload: InsuranceApplicationPayload) => {
     setSubmissionState("idle");
 
-    if (!insuranceData) {
-      setSubmissionState("error");
-      return;
-    }
-
     try {
-      const payload = createInsuranceApplicationPayload(values, insuranceData);
-
       await submitInsuranceApplication(payload);
       clearInsuranceFormDraft();
       setSubmissionState("success");
