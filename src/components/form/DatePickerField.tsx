@@ -1,5 +1,6 @@
 import { parseDate } from "@internationalized/date";
 import { useCallback } from "react";
+import type { FocusEvent as ReactFocusEvent } from "react";
 import {
   Button,
   Calendar,
@@ -34,6 +35,7 @@ function isValidIsoDate(value: string) {
   const [, year, month, day] = match;
   const date = new Date(Date.UTC(Number(year), Number(month) - 1, Number(day)));
 
+  // Let React Aria retain incomplete day, month, and year segments internally.
   return (
     date.getUTCFullYear() === Number(year) &&
     date.getUTCMonth() === Number(month) - 1 &&
@@ -73,7 +75,7 @@ export function DatePickerField<TFieldValues extends FieldValues>({
     isInvalid,
     setValue,
   } = useFormFieldController<TFieldValues>({ name, validateOn });
-  const selectedDate = toCalendarDate(fieldValue);
+  const initialDate = toCalendarDate(fieldValue);
   const minimumDate = minDate ? parseDate(minDate) : undefined;
   const maximumDate = maxDate ? parseDate(maxDate) : undefined;
 
@@ -87,21 +89,34 @@ export function DatePickerField<TFieldValues extends FieldValues>({
     [focusTargetRef],
   );
 
-  const handleChange = (value: typeof selectedDate) => {
+  const handleChange = (value: typeof initialDate) => {
     setValue(value?.toString() ?? "");
+  };
+
+  const handleDatePickerBlur = (event: ReactFocusEvent<Element>) => {
+    const nextFocusedElement = event.relatedTarget;
+
+    if (
+      nextFocusedElement instanceof Node &&
+      event.currentTarget.contains(nextFocusedElement)
+    ) {
+      return;
+    }
+
+    handleBlur();
   };
 
   return (
     <I18nProvider locale="nl-NL">
       <DatePicker
         name={fieldName}
-        value={selectedDate}
+        defaultValue={initialDate}
         minValue={minimumDate}
         maxValue={maximumDate}
         isRequired={isRequired}
         isInvalid={isInvalid}
         validationBehavior="aria"
-        onBlur={handleBlur}
+        onBlur={handleDatePickerBlur}
         onChange={handleChange}
         className="w-full"
       >
