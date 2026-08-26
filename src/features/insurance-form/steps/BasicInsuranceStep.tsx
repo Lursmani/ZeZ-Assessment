@@ -35,10 +35,6 @@ export function BasicInsuranceStep({ insuranceData }: BasicInsuranceStepProps) {
     focusTargetRef(firstInputRef.current);
   }, [focusTargetRef]);
 
-  const selectedInsurance = insuranceData.basicInsurance.find(
-    (insurance) => insurance.id === field.value,
-  );
-
   const selectInsurance = (insuranceId: string) => {
     field.onChange(insuranceId);
     void trigger("basicInsuranceId");
@@ -66,12 +62,15 @@ export function BasicInsuranceStep({ insuranceData }: BasicInsuranceStepProps) {
 
       <div className="mt-3 grid gap-3 sm:grid-cols-3">
         {insuranceData.basicInsurance.map((insurance, index) => {
+          const formattedPrice = priceFormatter.format(insurance.price);
+
           return (
             <RadioField
               key={insurance.id}
               inputRef={index === 0 ? firstInputRef : undefined}
               value={insurance.id}
-              className="relative"
+              aria-label={`${insurance.name}, ${formattedPrice} per maand`}
+              className="relative h-full"
             >
               <RadioButton
                 className={({
@@ -81,7 +80,7 @@ export function BasicInsuranceStep({ insuranceData }: BasicInsuranceStepProps) {
                   isSelected,
                 }) =>
                   [
-                    "flex min-h-28 cursor-pointer flex-col justify-between rounded-card border p-4 outline-none transition",
+                    "flex h-full min-h-56 cursor-pointer flex-col rounded-card border p-4 outline-none transition",
                     isSelected
                       ? "border-primary bg-primary-soft shadow-sm"
                       : isInvalid
@@ -115,9 +114,16 @@ export function BasicInsuranceStep({ insuranceData }: BasicInsuranceStepProps) {
                       </span>
                     </span>
 
-                    <span>
+                    <Text
+                      slot="description"
+                      className="mt-3 text-sm leading-6 text-muted-foreground"
+                    >
+                      {insurance.description}
+                    </Text>
+
+                    <span className="mt-auto pt-4">
                       <span className="text-lg font-bold text-foreground">
-                        {priceFormatter.format(insurance.price)}
+                        {formattedPrice}
                       </span>
                       <span className="block text-xs text-muted-foreground">
                         per maand
@@ -129,32 +135,6 @@ export function BasicInsuranceStep({ insuranceData }: BasicInsuranceStepProps) {
             </RadioField>
           );
         })}
-      </div>
-
-      <div className="mt-4 min-h-32 sm:min-h-24">
-        {selectedInsurance ? (
-          <Text
-            slot="description"
-            elementType="div"
-            className="min-h-32 rounded-card border border-border bg-surface-muted px-5 py-4 sm:min-h-24"
-            aria-live="polite"
-            aria-atomic="true"
-          >
-            <p className="text-sm font-semibold text-foreground">
-              {selectedInsurance.name}
-            </p>
-            <p className="mt-1 text-sm leading-6 text-muted-foreground">
-              {selectedInsurance.description}
-            </p>
-          </Text>
-        ) : (
-          <Text
-            slot="description"
-            className="block px-5 py-4 text-sm text-muted-foreground"
-          >
-            Selecteer een verzekering voor meer informatie
-          </Text>
-        )}
       </div>
 
       {fieldState.invalid && (

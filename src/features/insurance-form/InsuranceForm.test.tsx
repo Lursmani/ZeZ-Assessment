@@ -104,9 +104,14 @@ describe("InsuranceForm navigation", () => {
       name: "Basisverzekering",
     });
     const firstRadio = screen.getByRole("radio", { name: /Basis/ });
+    const descriptionId = firstRadio.getAttribute("aria-describedby");
 
     expect(document.activeElement).toBe(heading);
     expect((firstRadio as HTMLInputElement).tabIndex).toBe(0);
+    expect(descriptionId).toBeTruthy();
+    expect(document.getElementById(descriptionId!)?.textContent).toBe(
+      "Basisdekking",
+    );
 
     await user.tab();
 
