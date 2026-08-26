@@ -180,6 +180,7 @@ export function InsuranceForm({ insuranceData, onSubmit }: InsuranceFormProps) {
 
           {isLastStep ? (
             <Button
+              key="submit"
               type="submit"
               className="rounded-control bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground shadow-sm transition hover:bg-primary-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus disabled:cursor-not-allowed disabled:opacity-40"
               isDisabled={form.formState.isSubmitting}
@@ -190,6 +191,7 @@ export function InsuranceForm({ insuranceData, onSubmit }: InsuranceFormProps) {
             </Button>
           ) : (
             <Button
+              key="next"
               type="button"
               className="rounded-control bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground shadow-sm transition hover:bg-primary-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus disabled:cursor-not-allowed disabled:opacity-40"
               onPress={() => void goForward()}

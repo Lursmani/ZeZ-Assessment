@@ -40,6 +40,33 @@ afterEach(() => {
 });
 
 describe("insurance form validation", () => {
+  it("preserves a partial date while focus moves to the year segment", async () => {
+    const user = userEvent.setup();
+    render(<App />);
+
+    const day = screen.getByRole("spinbutton", {
+      name: /dag, Geboortedatum/,
+    });
+    const month = screen.getByRole("spinbutton", {
+      name: /maand, Geboortedatum/,
+    });
+    const year = screen.getByRole("spinbutton", {
+      name: /jaar, Geboortedatum/,
+    });
+
+    await user.click(day);
+    await user.keyboard("12");
+    await user.click(month);
+    await user.keyboard("8");
+    await user.click(year);
+    await user.keyboard("1990");
+
+    expect(day.textContent).toBe("12");
+    expect(month.textContent).toBe("8");
+    expect(year.textContent).toBe("1990");
+    expect(screen.queryByText("Geboortedatum is verplicht.")).toBeNull();
+  });
+
   it("validates every field in the active step when continuing", async () => {
     const user = userEvent.setup();
     render(<App />);

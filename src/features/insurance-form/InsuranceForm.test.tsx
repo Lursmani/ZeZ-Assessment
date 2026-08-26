@@ -128,6 +128,8 @@ describe("InsuranceForm navigation", () => {
     await user.click(screen.getByRole("button", { name: "Volgende" }));
     await user.click(screen.getByRole("button", { name: "Volgende" }));
 
+    expect(onSubmit).not.toHaveBeenCalled();
+
     const dentalInsurance = screen.getByRole("checkbox", {
       name: /Tandarts/,
     });
